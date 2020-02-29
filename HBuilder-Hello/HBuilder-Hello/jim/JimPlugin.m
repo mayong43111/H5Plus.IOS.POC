@@ -17,6 +17,7 @@
 - (void)PluginTestFunction:(PGMethod*)command{
     if(command){
         JimViewController *jimViewController = [[JimViewController alloc] init];
+        jimViewController.modalPresentationStyle = UIModalPresentationFullScreen;
         
         [self.rootViewController presentViewController:jimViewController animated:YES completion:nil];
         
