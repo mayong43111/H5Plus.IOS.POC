@@ -18,6 +18,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 @interface JimViewController (){
     AVAudioRecorder *_audioRecorder;
 }
+@property (nonatomic,strong) WKWebView* webView;
 @property WebViewJavascriptBridge * bridge;
 @end
 
@@ -42,13 +43,29 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.view addSubview:toolbar];
     
     //添加webview
-    UIWebView* webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0f, 80.0f, self.view.frame.size.width, self.view.frame.size.height - 40.0f)];
-    webView.delegate = self;
-    
-    webView.scalesPageToFit = YES; //自动对页面进行缩放以适应屏幕
-    webView.detectsPhoneNumbers = YES;//自动检测网页上的电话号码，单击可以拨打
-    [webView setMediaPlaybackRequiresUserAction:NO];
-    
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+     
+    // 创建设置对象
+    WKPreferences *preference = [[WKPreferences alloc]init];
+    //最小字体大小 当将javaScriptEnabled属性设置为NO时，可以看到明显的效果
+    preference.minimumFontSize = 0;
+    //设置是否支持javaScript 默认是支持的
+    preference.javaScriptEnabled = YES;
+    // 在iOS上默认为NO，表示是否允许不经过用户交互由javaScript自动打开窗口
+    preference.javaScriptCanOpenWindowsAutomatically = YES;
+    config.preferences = preference;
+
+    // 是使用h5的视频播放器在线播放, 还是使用原生播放器全屏播放
+    config.allowsInlineMediaPlayback = YES;
+    //设置视频是否需要用户手动播放  设置为NO则会允许自动播放
+    config.requiresUserActionForMediaPlayback = YES;
+    //设置是否允许画中画技术 在特定设备上有效
+    config.allowsPictureInPictureMediaPlayback = YES;
+    //设置请求的User-Agent信息中应用程序名称 iOS9后可用
+    //config.applicationNameForUserAgent = @"ChinaDailyForiPad";
+
+    WKWebView* webView = [[WKWebView alloc] initWithFrame:CGRectMake(0.0f, 80.0f, self.view.frame.size.width, self.view.frame.size.height - 40.0f) configuration:config];
+    self.webView.UIDelegate = self;
     [self.view addSubview:webView];
     
     [WebViewJavascriptBridge enableLogging];
