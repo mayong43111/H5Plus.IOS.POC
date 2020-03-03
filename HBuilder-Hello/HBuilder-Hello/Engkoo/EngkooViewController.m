@@ -1,30 +1,23 @@
 //
-//  JimViewController.m
-//  testDEMO
+//  EngkooViewController.m
+//  EngkooViewController
 //
 //  Created by SunXP on 17/4/28.
 //  Copyright © 2017年 L. All rights reserved.
 //
 
-#import "JimViewController.h"
+#import "EngkooViewController.h"
 #import "./WebViewJavascriptBridge/WebViewJavascriptBridge.h"
 #import <AVFoundation/AVFoundation.h>
 
-#define UIColorFromRGB(rgbValue) [UIColor \
-colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
-green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
-blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
-
-@interface JimViewController (){
+@interface EngkooViewController (){
     AVAudioRecorder *_audioRecorder;
 }
 @property (nonatomic,strong) WKWebView* webView;
 @property WebViewJavascriptBridge * bridge;
 @end
 
-
-
-@implementation JimViewController
+@implementation EngkooViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -44,7 +37,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     //添加webview
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
-     
+    
     // 创建设置对象
     WKPreferences *preference = [[WKPreferences alloc]init];
     //最小字体大小 当将javaScriptEnabled属性设置为NO时，可以看到明显的效果
@@ -54,7 +47,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     // 在iOS上默认为NO，表示是否允许不经过用户交互由javaScript自动打开窗口
     preference.javaScriptCanOpenWindowsAutomatically = YES;
     config.preferences = preference;
-
+    
     // 是使用h5的视频播放器在线播放, 还是使用原生播放器全屏播放
     config.allowsInlineMediaPlayback = YES;
     //设置视频是否需要用户手动播放  设置为NO则会允许自动播放
@@ -63,7 +56,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     config.allowsPictureInPictureMediaPlayback = YES;
     //设置请求的User-Agent信息中应用程序名称 iOS9后可用
     //config.applicationNameForUserAgent = @"ChinaDailyForiPad";
-
+    
     WKWebView* webView = [[WKWebView alloc] initWithFrame:CGRectMake(0.0f, 80.0f, self.view.frame.size.width, self.view.frame.size.height - 40.0f) configuration:config];
     self.webView.UIDelegate = self;
     [self.view addSubview:webView];
@@ -74,42 +67,27 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     [self.bridge setWebViewDelegate:self];
     
     [self.bridge registerHandler:@"Log_In" handler:^(id data, WVJBResponseCallback responseCallback) {
-        NSLog(@"testObjcCallback called: %@", data);
-        
-        NSURL * url =[NSURL URLWithString:@"https://app-dev.mtutor.engkoo.com/proxy/oauth/login"];
-        NSMutableURLRequest *req= [NSMutableURLRequest requestWithURL:url];
-        req.HTTPMethod=@"POST"; //请求方设置为POST ⚠️注意要区分大小写
-        //请求的参数
-        req.HTTPBody = [@"grant_type=XueLe&id=useridxxxx&secret=2FDA0803-2202-40EB-824D-28CDDC3A2FE4" dataUsingEncoding:NSUTF8StringEncoding];
-        [NSURLConnection sendAsynchronousRequest:req queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse * _Nullable response, NSData * _Nullable data, NSError * _Nullable connectionError) {
-            //请求返回值
-            NSString *accessToken = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"%@",accessToken);
-            
-            responseCallback(accessToken);
-        }];
+        NSLog(@"Login called: %@", data);
+        responseCallback([self.engkooParameter objectForKey:@"accessToken"]);
     }];
     
     [self.bridge registerHandler:@"startRecord" handler:^(id data, WVJBResponseCallback responseCallback) {
         NSLog(@"startRecord called: %@", data);
-        
         [self startRecordNotice];
-                
         responseCallback(@"");
     }];
     
     [self.bridge registerHandler:@"stopRecord" handler:^(id data, WVJBResponseCallback responseCallback) {
         NSLog(@"stopRecord called: %@", data);
-        
         [self stopRecordNotice];
         
         NSData *wavData = [NSData dataWithContentsOfFile:self.getFilePath];
         NSString *returnData = [self Base64StrWithWAVData:wavData];
-                
+        
         responseCallback(returnData);
     }];
     
-    NSURL* url = [NSURL URLWithString:@"https://app-dev.mtutor.engkoo.com/dist/app-scenario-lesson/?origin=ios-xinfangxiang"];//创建URL
+    NSURL* url = [NSURL URLWithString:[self.engkooParameter objectForKey:@"englishAssistantScenarioLessonUrl"]];//创建URL
     NSURLRequest* request = [NSURLRequest requestWithURL:url];//创建NSURLRequest
     [webView loadRequest:request];//加载
 }
@@ -143,12 +121,12 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 -(NSDictionary *)getAudioSetting{
     NSMutableDictionary* recordSetting = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-    [NSNumber numberWithFloat:16000], AVSampleRateKey,
-    [NSNumber numberWithInt:kAudioFormatLinearPCM],AVFormatIDKey,
-    [NSNumber numberWithInt:1], AVNumberOfChannelsKey,
-    [NSNumber numberWithInt:16], AVLinearPCMBitDepthKey,
-    [NSNumber numberWithBool:NO],AVLinearPCMIsBigEndianKey,
-    [NSNumber numberWithBool:NO],AVLinearPCMIsFloatKey, nil];
+                                          [NSNumber numberWithFloat:16000], AVSampleRateKey,
+                                          [NSNumber numberWithInt:kAudioFormatLinearPCM],AVFormatIDKey,
+                                          [NSNumber numberWithInt:1], AVNumberOfChannelsKey,
+                                          [NSNumber numberWithInt:16], AVLinearPCMBitDepthKey,
+                                          [NSNumber numberWithBool:NO],AVLinearPCMIsBigEndianKey,
+                                          [NSNumber numberWithBool:NO],AVLinearPCMIsFloatKey, nil];
     
     return recordSetting;
 }
@@ -186,11 +164,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)startRecordNotice{
- 
+    
     if ([self.audioRecorder isRecording]) {
         [self.audioRecorder stop];
     }
-   
+    
     [self deleteOldRecordFile];  //如果不删掉，会在原文件基础上录制；虽然不会播放原来的声音，但是音频长度会是录制的最大长度。
     
     AVAudioSession *audioSession=[AVAudioSession sharedInstance];
@@ -203,7 +181,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 }
 
 - (void)stopRecordNotice{
- 
+    
     NSLog(@"----------结束录音----------");
     
     [self.audioRecorder stop];

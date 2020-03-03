@@ -89,8 +89,8 @@
 		2F0BA4DC215BA12300F67004 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F0BA4DB215BA12300F67004 /* LaunchScreen.storyboard */; };
 		2FD11BBB215C79C5000A23AD /* liblibAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FD11BBA215C79C5000A23AD /* liblibAdSupport.a */; };
 		2FDE156A215F468000588710 /* liblibWeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FDE1569215F468000588710 /* liblibWeex.a */; };
-		38BDE97D24013802006AB35C /* JimPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE97B24013802006AB35C /* JimPlugin.m */; };
-		38BDE980240138E7006AB35C /* JimViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE97F240138E7006AB35C /* JimViewController.m */; };
+		38BDE97D24013802006AB35C /* EngkooWebViewFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE97B24013802006AB35C /* EngkooWebViewFeature.m */; };
+		38BDE980240138E7006AB35C /* EngkooViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE97F240138E7006AB35C /* EngkooViewController.m */; };
 		38BDE98A24014E27006AB35C /* WebViewJavascriptBridgeBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE98224014E26006AB35C /* WebViewJavascriptBridgeBase.m */; };
 		38BDE98B24014E27006AB35C /* WKWebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE98324014E26006AB35C /* WKWebViewJavascriptBridge.m */; };
 		38BDE98C24014E27006AB35C /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 38BDE98424014E26006AB35C /* WebViewJavascriptBridge.m */; };
@@ -328,10 +328,10 @@
 		2F0BA4DB215BA12300F67004 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2FD11BBA215C79C5000A23AD /* liblibAdSupport.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibAdSupport.a; path = ../SDK/Libs/liblibAdSupport.a; sourceTree = "<group>"; };
 		2FDE1569215F468000588710 /* liblibWeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblibWeex.a; path = ../SDK/Libs/liblibWeex.a; sourceTree = "<group>"; };
-		38BDE97B24013802006AB35C /* JimPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JimPlugin.m; sourceTree = "<group>"; };
-		38BDE97C24013802006AB35C /* JimPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JimPlugin.h; sourceTree = "<group>"; };
-		38BDE97E240138E7006AB35C /* JimViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JimViewController.h; sourceTree = "<group>"; };
-		38BDE97F240138E7006AB35C /* JimViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JimViewController.m; sourceTree = "<group>"; };
+		38BDE97B24013802006AB35C /* EngkooWebViewFeature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EngkooWebViewFeature.m; sourceTree = "<group>"; };
+		38BDE97C24013802006AB35C /* EngkooWebViewFeature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EngkooWebViewFeature.h; sourceTree = "<group>"; };
+		38BDE97E240138E7006AB35C /* EngkooViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EngkooViewController.h; sourceTree = "<group>"; };
+		38BDE97F240138E7006AB35C /* EngkooViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EngkooViewController.m; sourceTree = "<group>"; };
 		38BDE98224014E26006AB35C /* WebViewJavascriptBridgeBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridgeBase.m; sourceTree = "<group>"; };
 		38BDE98324014E26006AB35C /* WKWebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WKWebViewJavascriptBridge.m; sourceTree = "<group>"; };
 		38BDE98424014E26006AB35C /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; };
@@ -787,16 +787,16 @@
 			path = ../../SDK/Bundles;
 			sourceTree = "<group>";
 		};
-		38BDE97A24013801006AB35C /* jim */ = {
+		38BDE97A24013801006AB35C /* Engkoo */ = {
 			isa = PBXGroup;
 			children = (
 				38BDE98124014E26006AB35C /* WebViewJavascriptBridge */,
-				38BDE97E240138E7006AB35C /* JimViewController.h */,
-				38BDE97F240138E7006AB35C /* JimViewController.m */,
-				38BDE97B24013802006AB35C /* JimPlugin.m */,
-				38BDE97C24013802006AB35C /* JimPlugin.h */,
+				38BDE97E240138E7006AB35C /* EngkooViewController.h */,
+				38BDE97F240138E7006AB35C /* EngkooViewController.m */,
+				38BDE97B24013802006AB35C /* EngkooWebViewFeature.m */,
+				38BDE97C24013802006AB35C /* EngkooWebViewFeature.h */,
 			);
-			path = jim;
+			path = Engkoo;
 			sourceTree = "<group>";
 		};
 		38BDE98124014E26006AB35C /* WebViewJavascriptBridge */ = {
@@ -1159,7 +1159,7 @@
 		8EED62A1198A1D13000A4449 /* HBuilder-Hello */ = {
 			isa = PBXGroup;
 			children = (
-				38BDE97A24013801006AB35C /* jim */,
+				38BDE97A24013801006AB35C /* Engkoo */,
 				2F0BA3FA215B4A4100F67004 /* inc */,
 				8EED62AA198A1D13000A4449 /* AppDelegate.h */,
 				8EED62AB198A1D13000A4449 /* AppDelegate.m */,
@@ -1364,8 +1364,8 @@
 				8EED62B5198A1D14000A4449 /* ViewController.m in Sources */,
 				38BDE98C24014E27006AB35C /* WebViewJavascriptBridge.m in Sources */,
 				8EED62AC198A1D13000A4449 /* AppDelegate.m in Sources */,
-				38BDE97D24013802006AB35C /* JimPlugin.m in Sources */,
-				38BDE980240138E7006AB35C /* JimViewController.m in Sources */,
+				38BDE97D24013802006AB35C /* EngkooWebViewFeature.m in Sources */,
+				38BDE980240138E7006AB35C /* EngkooViewController.m in Sources */,
 				38BDE98D24014E27006AB35C /* WebViewJavascriptBridge_JS.m in Sources */,
 				38BDE98A24014E27006AB35C /* WebViewJavascriptBridgeBase.m in Sources */,
 				8EED62A8198A1D13000A4449 /* main.m in Sources */,
