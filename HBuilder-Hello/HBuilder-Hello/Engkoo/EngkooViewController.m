@@ -203,7 +203,7 @@
         NSLog(@"Mp3Data 不能为空");
         return nil;
     }
-
+    
     NSString *str = [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
     return str;
 }
@@ -256,13 +256,11 @@
     //获取图片
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     
-    NSDictionary *metadata = info[UIImagePickerControllerMediaMetadata];
-    
     if(image != nil && self.currentResponseCallback!=nil){
-         
-        image = [self imageCompressForWidthScale:image targetWidth:400];
         
+        image = [self imageCompressForWidthScale:image targetWidth:400];
         NSData *imageData = [self compressImageQuality:image toByte:50*1024];
+        
         NSString * returnData = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
         returnData = [returnData stringByReplacingOccurrencesOfString:@"\r" withString:@""];
         returnData = [returnData stringByReplacingOccurrencesOfString:@"\n" withString:@""];
