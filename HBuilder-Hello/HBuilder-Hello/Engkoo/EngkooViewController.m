@@ -253,13 +253,23 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
     [self dismissViewControllerAnimated:YES completion:nil];
     
-    if(self.currentResponseCallback!=nil){
-        //获取图片
-        UIImage *image = info[UIImagePickerControllerOriginalImage];
+    //获取图片
+    UIImage *image = info[UIImagePickerControllerOriginalImage];
+    
+    NSDictionary *metadata = info[UIImagePickerControllerMediaMetadata];
+    
+    if(image != nil && self.currentResponseCallback!=nil){
+         
         image = [self imageCompressForWidthScale:image targetWidth:400];
         
         NSData *imageData = [self compressImageQuality:image toByte:50*1024];
-        self.currentResponseCallback([imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]);
+        NSString * returnData = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+        returnData = [returnData stringByReplacingOccurrencesOfString:@"\r" withString:@""];
+        returnData = [returnData stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+        
+        self.currentResponseCallback(returnData);
+        
+        self.currentResponseCallback = nil;
     }
 }
 
