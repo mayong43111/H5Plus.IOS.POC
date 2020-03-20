@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
-@interface EngkooViewController : UIViewController<UIWebViewDelegate>
+@interface EngkooViewController : UIViewController<WKNavigationDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (strong,nonatomic) NSMutableDictionary* engkooParameter;
 

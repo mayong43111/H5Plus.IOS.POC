@@ -14,7 +14,6 @@
 - (void)startEngkooWebView:(PGMethod*)commands{
     
     if(commands){
-        NSString* cbId = [commands.arguments objectAtIndex:0];
         NSString* url = [commands.arguments objectAtIndex:1];
         NSString* accessToken = [commands.arguments objectAtIndex:2];
         NSString* title = [commands.arguments objectAtIndex:3];

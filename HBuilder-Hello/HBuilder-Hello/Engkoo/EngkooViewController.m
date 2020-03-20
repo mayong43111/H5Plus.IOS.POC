@@ -14,7 +14,8 @@
     AVAudioRecorder *_audioRecorder;
 }
 @property (nonatomic,strong) WKWebView* webView;
-@property WebViewJavascriptBridge * bridge;
+@property WebViewJavascriptBridge* bridge;
+@property WVJBResponseCallback currentResponseCallback;
 @end
 
 @implementation EngkooViewController
@@ -22,9 +23,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.title = @"综合支付";
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    [self addToolBar];
+    WKWebView* webView = [self addWebView];
+    [self addWebViewJavascriptBridge:webView];
+    
+    NSURL* url = [NSURL URLWithString:[self.engkooParameter objectForKey:@"englishAssistantScenarioLessonUrl"]];//创建URL
+    NSURLRequest* request = [NSURLRequest requestWithURL:url];//创建NSURLRequest
+    [webView loadRequest:request];//加载
+}
+
+-(void)addToolBar{
     //工具条
     UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 40.0f, self.view.frame.size.width, 40.0f)];
     toolbar.backgroundColor = [UIColor whiteColor];
@@ -34,7 +45,9 @@
     //设置导航栏上的按钮单元
     [toolbar setItems:items animated:YES];
     [self.view addSubview:toolbar];
-    
+}
+
+- (WKWebView *)addWebView{
     //添加webview
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     
@@ -58,9 +71,13 @@
     //config.applicationNameForUserAgent = @"ChinaDailyForiPad";
     
     WKWebView* webView = [[WKWebView alloc] initWithFrame:CGRectMake(0.0f, 80.0f, self.view.frame.size.width, self.view.frame.size.height - 40.0f) configuration:config];
-    self.webView.UIDelegate = self;
+    self.webView.navigationDelegate  = self;
     [self.view addSubview:webView];
     
+    return webView;
+}
+
+-(void) addWebViewJavascriptBridge:(WKWebView *)webView{
     [WebViewJavascriptBridge enableLogging];
     
     self.bridge = [WebViewJavascriptBridge bridgeForWebView:webView];
@@ -81,37 +98,32 @@
         NSLog(@"stopRecord called: %@", data);
         [self stopRecordNotice];
         
-        NSData *wavData = [NSData dataWithContentsOfFile:self.getFilePath];
+        NSData *wavData = [NSData dataWithContentsOfFile:self.getAudioFilePath];
         NSString *returnData = [self Base64StrWithWAVData:wavData];
         
         responseCallback(returnData);
     }];
     
-    NSURL* url = [NSURL URLWithString:[self.engkooParameter objectForKey:@"englishAssistantScenarioLessonUrl"]];//创建URL
-    NSURLRequest* request = [NSURLRequest requestWithURL:url];//创建NSURLRequest
-    [webView loadRequest:request];//加载
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-    NSLog(@"webViewDidStartLoad");
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    NSLog(@"webViewDidFinishLoad");
-}
-
-- (void)disableSafetyTimeout {
-    [self.bridge disableJavscriptAlertBoxSafetyTimeout];
-}
-
-- (void)callHandler:(id)sender {
-    id data = @{ @"greetingFromObjC": @"Hi there, JS!" };
-    [_bridge callHandler:@"testJavascriptHandler" data:data responseCallback:^(id response) {
-        NSLog(@"testJavascriptHandler responded: %@", response);
+    [self.bridge registerHandler:@"chooseImage" handler:^(id data, WVJBResponseCallback responseCallback) {
+        NSLog(@"chooseImage called: %@", data);
+        [self takeImage:responseCallback];
+    }];
+    
+    [self.bridge registerHandler:@"shootImage" handler:^(id data, WVJBResponseCallback responseCallback) {
+        NSLog(@"shootImage called: %@", data);
+        [self shootImage:responseCallback];
     }];
 }
 
-- (NSString *)getFilePath {
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+    NSLog(@"webViewDidStartLoad");
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    NSLog(@"webViewDidFinishLoad");
+}
+
+- (NSString *)getAudioFilePath {
     
     NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     NSString *urlPath = [path stringByAppendingPathComponent:@"temp.wav"];
@@ -134,14 +146,14 @@
 -(AVAudioRecorder *)audioRecorder{
     if (!_audioRecorder) {
         //创建录音文件保存路径
-        NSURL *url=[NSURL URLWithString:self.getFilePath];
+        NSURL *url=[NSURL URLWithString:self.getAudioFilePath];
         //创建录音格式设置
         NSDictionary *setting=[self getAudioSetting];
         //创建录音机
         NSError *error=nil;
         
         _audioRecorder=[[AVAudioRecorder alloc]initWithURL:url settings:setting error:&error];
-        _audioRecorder.delegate=self;
+        //_audioRecorder.delegate=self;
         _audioRecorder.meteringEnabled=YES;//如果要监控声波则必须设置为YES
         if (error) {
             NSLog(@"创建录音机对象时发生错误，错误信息：%@",error.localizedDescription);
@@ -155,7 +167,7 @@
     NSFileManager* fileManager=[NSFileManager defaultManager];
     
     NSLog(@"存在");
-    BOOL blDele= [fileManager removeItemAtPath:self.getFilePath error:nil];
+    BOOL blDele= [fileManager removeItemAtPath:self.getAudioFilePath error:nil];
     if (blDele) {
         NSLog(@"删除成功");
     }else {
@@ -183,7 +195,6 @@
 - (void)stopRecordNotice{
     
     NSLog(@"----------结束录音----------");
-    
     [self.audioRecorder stop];
 }
 
@@ -200,5 +211,135 @@
 - (void)finish{
     NSLog(@"----------关闭页面----------");
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)takeImage:(WVJBResponseCallback)responseCallback{
+    
+    self.currentResponseCallback = responseCallback;
+    
+    //初始化UIImagePickerController类
+    UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+    //判断数据来源为相册
+    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    //设置代理
+    picker.delegate = self;
+    //打开相册
+    [self presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)shootImage:(WVJBResponseCallback)responseCallback{
+    
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] == NO)
+        return  ;
+    
+    self.currentResponseCallback = responseCallback;
+    
+    //初始化UIImagePickerController类
+    UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+    //判断数据来源为相册
+    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    // 设置拍摄照片
+    picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
+    // 设置使用手机的前置摄像头。
+    picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+    //设置代理
+    picker.delegate = self;
+    
+    //打开
+    [self presentViewController:picker animated:YES completion:nil];
+}
+
+//选择完成回调函数
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    if(self.currentResponseCallback!=nil){
+        //获取图片
+        UIImage *image = info[UIImagePickerControllerOriginalImage];
+        image = [self imageCompressForWidthScale:image targetWidth:400];
+        image = [self compressImageQuality:image toByte:50*1024];
+        
+        NSData *imageData = UIImagePNGRepresentation(image);
+        self.currentResponseCallback([self Base64StrWithWAVData:imageData]);
+    }
+}
+
+//用户取消选择
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    self.currentResponseCallback = nil;
+}
+
+
+//指定宽度按比例缩放
+-(UIImage *) imageCompressForWidthScale:(UIImage *)sourceImage targetWidth:(CGFloat)defineWidth{
+    
+    UIImage *newImage = nil;
+    CGSize imageSize = sourceImage.size;
+    CGFloat width = imageSize.width;
+    CGFloat height = imageSize.height;
+    CGFloat targetWidth = defineWidth;
+    CGFloat targetHeight = height / (width / targetWidth);
+    CGSize size = CGSizeMake(targetWidth, targetHeight);
+    CGFloat scaleFactor = 0.0;
+    CGFloat scaledWidth = targetWidth;
+    CGFloat scaledHeight = targetHeight;
+    CGPoint thumbnailPoint = CGPointMake(0.0, 0.0);
+    
+    if(CGSizeEqualToSize(imageSize, size) == NO){
+        
+        CGFloat widthFactor = targetWidth / width;
+        CGFloat heightFactor = targetHeight / height;
+        
+        if(widthFactor > heightFactor){
+            scaleFactor = widthFactor;
+        }
+        else{
+            scaleFactor = heightFactor;
+        }
+        scaledWidth = width * scaleFactor;
+        scaledHeight = height * scaleFactor;
+        
+        if(widthFactor > heightFactor){
+            
+            thumbnailPoint.y = (targetHeight - scaledHeight) * 0.5;
+            
+        }else if(widthFactor < heightFactor){
+            
+            thumbnailPoint.x = (targetWidth - scaledWidth) * 0.5;
+        }
+    }
+    
+    UIGraphicsBeginImageContext(size);
+    
+    CGRect thumbnailRect = CGRectZero;
+    thumbnailRect.origin = thumbnailPoint;
+    thumbnailRect.size.width = scaledWidth;
+    thumbnailRect.size.height = scaledHeight;
+    
+    [sourceImage drawInRect:thumbnailRect];
+    
+    newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    if(newImage == nil){
+        
+        NSLog(@"scale image fail");
+    }
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
+//压缩图片质量
+- (UIImage *)compressImageQuality:(UIImage *)image toByte:(NSInteger)maxLength {
+    CGFloat compression = 1;
+    NSData *data = UIImageJPEGRepresentation(image, compression);
+    while (data.length > maxLength && compression > 0) {
+        compression -= 0.02;
+        data = UIImageJPEGRepresentation(image, compression); // When compression less than a value, this code dose not work
+    }
+    
+    UIImage *resultImage = [UIImage imageWithData:data];
+    return resultImage;
 }
 @end
