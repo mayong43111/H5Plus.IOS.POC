@@ -203,7 +203,7 @@
         NSLog(@"Mp3Data 不能为空");
         return nil;
     }
-    //    NSString *str = [data base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+
     NSString *str = [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
     return str;
 }
@@ -236,7 +236,7 @@
     
     //初始化UIImagePickerController类
     UIImagePickerController * picker = [[UIImagePickerController alloc] init];
-    //判断数据来源为相册
+    //数据来源
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
     // 设置拍摄照片
     picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
@@ -257,10 +257,9 @@
         //获取图片
         UIImage *image = info[UIImagePickerControllerOriginalImage];
         image = [self imageCompressForWidthScale:image targetWidth:400];
-        image = [self compressImageQuality:image toByte:50*1024];
         
-        NSData *imageData = UIImagePNGRepresentation(image);
-        self.currentResponseCallback([self Base64StrWithWAVData:imageData]);
+        NSData *imageData = [self compressImageQuality:image toByte:50*1024];
+        self.currentResponseCallback([imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]);
     }
 }
 
@@ -331,7 +330,7 @@
 }
 
 //压缩图片质量
-- (UIImage *)compressImageQuality:(UIImage *)image toByte:(NSInteger)maxLength {
+- (NSData *)compressImageQuality:(UIImage *)image toByte:(NSInteger)maxLength {
     CGFloat compression = 1;
     NSData *data = UIImageJPEGRepresentation(image, compression);
     while (data.length > maxLength && compression > 0) {
@@ -339,7 +338,6 @@
         data = UIImageJPEGRepresentation(image, compression); // When compression less than a value, this code dose not work
     }
     
-    UIImage *resultImage = [UIImage imageWithData:data];
-    return resultImage;
+    return data;
 }
 @end
