@@ -10,6 +10,21 @@
 #import "./WebViewJavascriptBridge/WebViewJavascriptBridge.h"
 #import <AVFoundation/AVFoundation.h>
 
+// status bar height.
+#define kStatusBarHeight (IS_iPhoneX ? 44.f : 20.f)
+// Navigation bar height.
+#define kNavigationBarHeight 44.f
+// Tabbar height.
+#define kTabbarHeight (IS_iPhoneX ? (49.f+34.f) : 49.f)
+// Tabbar safe bottom margin.
+#define kTabbarSafeBottomMargin (IS_iPhoneX ? 34.f : 0.f)
+// Status bar & navigation bar height.
+#define kStatusBarAndNavigationBarHeight (IS_iPhoneX ? 88.f : 64.f)
+//判断是否iPhone X
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IOS_11  ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.f)
+#define IS_iPhoneX (IS_IOS_11 && IS_IPHONE && (MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) >= 375 && MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) >= 812))
+
 @interface EngkooViewController (){
     AVAudioRecorder *_audioRecorder;
 }
@@ -37,7 +52,9 @@
 
 -(void)addToolBar{
     //工具条
-    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, 40.0f, self.view.frame.size.width, 40.0f)];
+    NSLog(@"kStatusBarHeight is: %f", kStatusBarHeight);
+    
+    UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0f, kStatusBarHeight, self.view.frame.size.width, kNavigationBarHeight)];
     toolbar.backgroundColor = [UIColor whiteColor];
     UIBarButtonItem *closeditem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(finish)];
     //将按钮单元都添加到数组中
@@ -70,7 +87,7 @@
     //设置请求的User-Agent信息中应用程序名称 iOS9后可用
     //config.applicationNameForUserAgent = @"ChinaDailyForiPad";
     
-    WKWebView* webView = [[WKWebView alloc] initWithFrame:CGRectMake(0.0f, 80.0f, self.view.frame.size.width, self.view.frame.size.height - 40.0f) configuration:config];
+    WKWebView* webView = [[WKWebView alloc] initWithFrame:CGRectMake(0.0f, kStatusBarHeight + kNavigationBarHeight, self.view.frame.size.width, self.view.frame.size.height - kNavigationBarHeight - kStatusBarHeight - kTabbarSafeBottomMargin) configuration:config];
     self.webView.navigationDelegate  = self;
     [self.view addSubview:webView];
     
@@ -219,6 +236,8 @@
     
     //初始化UIImagePickerController类
     UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+    //全屏幕
+    picker.modalPresentationStyle = UIModalPresentationFullScreen;
     //判断数据来源为相册
     picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
     //设置代理
@@ -236,6 +255,8 @@
     
     //初始化UIImagePickerController类
     UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+    //全屏幕
+    picker.modalPresentationStyle = UIModalPresentationFullScreen;
     //数据来源
     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
     // 设置拍摄照片
