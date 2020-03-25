@@ -7,6 +7,7 @@
 //
 
 #import "EngkooViewController.h"
+#import "LYAuthorizedMaster.h"
 #import "./WebViewJavascriptBridge/WebViewJavascriptBridge.h"
 #import <AVFoundation/AVFoundation.h>
 
@@ -194,19 +195,22 @@
 
 - (void)startRecordNotice{
     
-    if ([self.audioRecorder isRecording]) {
-        [self.audioRecorder stop];
-    }
-    
-    [self deleteOldRecordFile];  //如果不删掉，会在原文件基础上录制；虽然不会播放原来的声音，但是音频长度会是录制的最大长度。
-    
-    AVAudioSession *audioSession=[AVAudioSession sharedInstance];
-    [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-    
-    
-    if (![self.audioRecorder isRecording]) {//0--停止、暂停，1-录制中
-        [self.audioRecorder record];//首次使用应用时如果调用record方法会询问用户是否允许使用麦克风
-    }
+    [LYAuthorizedMaster audioAuthorityCheckSuccess:^(){
+        
+        if ([self.audioRecorder isRecording]) {
+            [self.audioRecorder stop];
+        }
+        
+        [self deleteOldRecordFile];  //如果不删掉，会在原文件基础上录制；虽然不会播放原来的声音，但是音频长度会是录制的最大长度。
+        
+        AVAudioSession *audioSession=[AVAudioSession sharedInstance];
+        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+        
+        
+        if (![self.audioRecorder isRecording]) {//0--停止、暂停，1-录制中
+            [self.audioRecorder record];//首次使用应用时如果调用record方法会询问用户是否允许使用麦克风
+        }
+    } fail:nil];
 }
 
 - (void)stopRecordNotice{
@@ -232,42 +236,50 @@
 
 - (void)takeImage:(WVJBResponseCallback)responseCallback{
     
-    self.currentResponseCallback = responseCallback;
-    
-    //初始化UIImagePickerController类
-    UIImagePickerController * picker = [[UIImagePickerController alloc] init];
-    //全屏幕
-    picker.modalPresentationStyle = UIModalPresentationFullScreen;
-    //判断数据来源为相册
-    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-    //设置代理
-    picker.delegate = self;
-    //打开相册
-    [self presentViewController:picker animated:YES completion:nil];
+    [LYAuthorizedMaster albumAuthorityCheckSuccess:^(){
+        
+        self.currentResponseCallback = responseCallback;
+        
+        //初始化UIImagePickerController类
+        UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+        //全屏幕
+        picker.modalPresentationStyle = UIModalPresentationFullScreen;
+        //判断数据来源为相册
+        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+        //设置代理
+        picker.delegate = self;
+        //打开相册
+        [self presentViewController:picker animated:YES completion:nil];
+        
+    } fail:nil];
 }
 
 - (void)shootImage:(WVJBResponseCallback)responseCallback{
     
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] == NO)
-        return  ;
-    
-    self.currentResponseCallback = responseCallback;
-    
-    //初始化UIImagePickerController类
-    UIImagePickerController * picker = [[UIImagePickerController alloc] init];
-    //全屏幕
-    picker.modalPresentationStyle = UIModalPresentationFullScreen;
-    //数据来源
-    picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    // 设置拍摄照片
-    picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
-    // 设置使用手机的前置摄像头。
-    picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-    //设置代理
-    picker.delegate = self;
-    
-    //打开
-    [self presentViewController:picker animated:YES completion:nil];
+    [LYAuthorizedMaster cameraAuthorityCheckSuccess:^(){
+        
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] == NO)
+            return  ;
+        
+        self.currentResponseCallback = responseCallback;
+        
+        //初始化UIImagePickerController类
+        UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+        //全屏幕
+        picker.modalPresentationStyle = UIModalPresentationFullScreen;
+        //数据来源
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        // 设置拍摄照片
+        picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModePhoto;
+        // 设置使用手机的前置摄像头。
+        picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+        //设置代理
+        picker.delegate = self;
+        
+        //打开
+        [self presentViewController:picker animated:YES completion:nil];
+        
+    } fail:nil];
 }
 
 //选择完成回调函数

@@ -71,6 +71,7 @@
 		24F990111DFBD9A500848C2B /* libMiOauth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F990101DFBD9A500848C2B /* libMiOauth.a */; };
 		24F990131DFBDA3300848C2B /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F990121DFBDA3300848C2B /* CoreData.framework */; };
 		24F990151DFBDA5600848C2B /* MiPassport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24F990141DFBDA5600848C2B /* MiPassport.framework */; };
+		2E4E92EA242A606E00173A94 /* LYAuthorizedMaster.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E92E9242A606E00173A94 /* LYAuthorizedMaster.m */; };
 		2F0BA3F9215B48A700F67004 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F0BA3F8215B48A700F67004 /* Images.xcassets */; };
 		2F0BA410215B784100F67004 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0BA40F215B784000F67004 /* Contacts.framework */; };
 		2F0BA412215B814100F67004 /* liblibVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F0BA411215B814000F67004 /* liblibVideo.a */; };
@@ -292,6 +293,8 @@
 		24F990101DFBD9A500848C2B /* libMiOauth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiOauth.a; path = ../SDK/Libs/libMiOauth.a; sourceTree = "<group>"; };
 		24F990121DFBDA3300848C2B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		24F990141DFBDA5600848C2B /* MiPassport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MiPassport.framework; path = ../SDK/Libs/MiPassport.framework; sourceTree = "<group>"; };
+		2E4E92E9242A606E00173A94 /* LYAuthorizedMaster.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LYAuthorizedMaster.m; sourceTree = "<group>"; };
+		2E4E92EB242A630700173A94 /* LYAuthorizedMaster.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LYAuthorizedMaster.h; sourceTree = "<group>"; };
 		2F0BA3F8215B48A700F67004 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ../HBuilder/Images.xcassets; sourceTree = "<group>"; };
 		2F0BA3FB215B4A4100F67004 /* DCADManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DCADManager.h; sourceTree = "<group>"; };
 		2F0BA3FD215B4A4100F67004 /* PDRCommonString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDRCommonString.h; sourceTree = "<group>"; };
@@ -795,6 +798,8 @@
 				38BDE97F240138E7006AB35C /* EngkooViewController.m */,
 				38BDE97B24013802006AB35C /* EngkooWebViewFeature.m */,
 				38BDE97C24013802006AB35C /* EngkooWebViewFeature.h */,
+				2E4E92E9242A606E00173A94 /* LYAuthorizedMaster.m */,
+				2E4E92EB242A630700173A94 /* LYAuthorizedMaster.h */,
 			);
 			path = Engkoo;
 			sourceTree = "<group>";
@@ -1368,6 +1373,7 @@
 				38BDE980240138E7006AB35C /* EngkooViewController.m in Sources */,
 				38BDE98D24014E27006AB35C /* WebViewJavascriptBridge_JS.m in Sources */,
 				38BDE98A24014E27006AB35C /* WebViewJavascriptBridgeBase.m in Sources */,
+				2E4E92EA242A606E00173A94 /* LYAuthorizedMaster.m in Sources */,
 				8EED62A8198A1D13000A4449 /* main.m in Sources */,
 				38BDE98B24014E27006AB35C /* WKWebViewJavascriptBridge.m in Sources */,
 			);
